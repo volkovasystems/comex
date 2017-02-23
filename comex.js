@@ -47,18 +47,22 @@
 
 	@include:
 		{
+			"arid": "arid",
 			"diatom": "diatom",
 			"falzy": "falzy",
 			"gnaw": "gnaw",
+			"plough": "plough",
 			"protype": "protype",
 			"truly": "truly"
 		}
 	@end-include
 */
 
+const arid = require( "arid" );
 const diatom = require( "diatom" );
 const falzy = require( "falzy" );
 const gnaw = require( "gnaw" );
+const plough = require( "plough" );
 const protype = require( "protype" );
 const truly = require( "truly" );
 
@@ -74,34 +78,83 @@ Comex.prototype.initialize = function initialize( command ){
 	/*;
 		@meta-configuration:
 			{
-				"command:required": "string"
+				"command:required": [
+					"string",
+					"..."
+				]
 			}
 		@end-meta-configuration
 	*/
 
-	if( falzy( command ) || !protype( command, STRING ) ){
+	this.command = this.flatten( arguments );
+
+	if( arid( this.command ) ){
 		throw new Error( "invalid command" );
 	}
 
-	this.command = [ command ];
-
 	return this;
+};
+
+Comex.prototype.resolve = function resolve( command ){
+	/*;
+		@meta-configuration:
+			{
+				"command:required": [
+					"string",
+					"..."
+				]
+			}
+		@end-meta-configuration
+	*/
+
+	return this.output( this.flatten( arguments ) );
+};
+
+Comex.prototype.flatten = function flatten( command ){
+	/*;
+		@meta-configuration:
+			{
+				"command:required": [
+					"string",
+					"..."
+				]
+			}
+		@end-meta-configuration
+	*/
+
+	return plough( arguments ).filter( ( command ) => {
+		return truly( command ) && protype( command, STRING );
+	} );
+};
+
+Comex.prototype.output = function output( command ){
+	/*;
+		@meta-configuration:
+			{
+				"command:required": [
+					"string",
+					"..."
+				]
+			}
+		@end-meta-configuration
+	*/
+
+	return plough( arguments ).join( SPACE_SEPARATOR ).replace( /\s+/g, SPACE_SEPARATOR ).trim( );
 };
 
 Comex.prototype.and = function and( command ){
 	/*;
 		@meta-configuration:
 			{
-				"command:required": "string"
+				"command:required": [
+					"string",
+					"..."
+				]
 			}
 		@end-meta-configuration
 	*/
 
-	if( falzy( command ) || !protype( command, STRING ) ){
-		throw new Error( "invalid command" );
-	}
-
-	this.join( AND_SEPARATOR ).join( command );
+	this.join( AND_SEPARATOR ).join( this.resolve( arguments ) );
 
 	return this;
 };
@@ -110,16 +163,15 @@ Comex.prototype.or = function or( command ){
 	/*;
 		@meta-configuration:
 			{
-				"command:required": "string"
+				"command:required": [
+					"string",
+					"..."
+				]
 			}
 		@end-meta-configuration
 	*/
 
-	if( falzy( command ) || !protype( command, STRING ) ){
-		throw new Error( "invalid command" );
-	}
-
-	this.join( OR_SEPARATOR ).join( command );
+	this.join( OR_SEPARATOR ).join( this.resolve( arguments ) );
 
 	return this;
 };
@@ -128,12 +180,15 @@ Comex.prototype.pipe = function pipe( command ){
 	/*;
 		@meta-configuration:
 			{
-				"command:required": "string"
+				"command:required": [
+					"string",
+					"..."
+				]
 			}
 		@end-meta-configuration
 	*/
 
-	this.join( PIPE_SEPARATOR ).join( command );
+	this.join( PIPE_SEPARATOR ).join( this.resolve( arguments ) );
 
 	return this;
 };
@@ -142,12 +197,15 @@ Comex.prototype.then = function then( command ){
 	/*;
 		@meta-configuration:
 			{
-				"command:required": "string"
+				"command:required": [
+					"string",
+					"..."
+				]
 			}
 		@end-meta-configuration
 	*/
 
-	this.join( THEN_SEPARATOR ).join( command );
+	this.join( THEN_SEPARATOR ).join( this.resolve( arguments ) );
 
 	return this;
 };
@@ -156,10 +214,15 @@ Comex.prototype.join = function join( command ){
 	/*;
 		@meta-configuration:
 			{
-				"command:required": "string"
+				"command:required": [
+					"string",
+					"..."
+				]
 			}
 		@end-meta-configuration
 	*/
+
+	command = this.resolve( arguments );
 
 	if( falzy( command ) || !protype( command, STRING ) ){
 		throw new Error( "invalid command" );
@@ -179,7 +242,7 @@ Comex.prototype.execute = function execute( callback ){
 		@end-meta-configuration
 	*/
 
-	let command = this.command.join( SPACE_SEPARATOR ).trim( ).replace( /\s+/g, SPACE_SEPARATOR );
+	let command = this.resolve( this.command );
 
 	if( truly( callback ) && protype( callback, FUNCTION ) ){
 		return gnaw( command )( callback );

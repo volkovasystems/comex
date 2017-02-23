@@ -129,6 +129,17 @@ decamelize@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
 
+decrease@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/decrease/-/decrease-0.12.0.tgz#20cf41e311598a6a3d403a5542ec5eb160ee42ed"
+  dependencies:
+    babel-runtime "^6.23.0"
+    doubt "^0.17.0"
+    harden "^0.16.0"
+    protype "^0.17.0"
+    raze "^0.19.0"
+    truly "^0.13.0"
+
 dephall@^0.14.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/dephall/-/dephall-0.14.0.tgz#285644f7c2deea01afa6f21a4e8dbd838c8703a6"
@@ -400,6 +411,17 @@ optimist@^0.6.1:
   dependencies:
     minimist "~0.0.1"
     wordwrap "~0.0.2"
+
+plough@^0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/plough/-/plough-0.14.0.tgz#b10f13d2e4658bfdc329e03a017a4a5e49a49ca8"
+  dependencies:
+    arid "^0.15.0"
+    babel-runtime "^6.23.0"
+    decrease "^0.12.0"
+    doubt "^0.17.0"
+    harden "^0.16.0"
+    raze "^0.19.0"
 
 protease@^0.9.0:
   version "0.9.0"

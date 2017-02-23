@@ -1,6 +1,6 @@
 {
   "name": "comex",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Shell command builder executor.",
   "main": "comex.js",
   "scripts": {
@@ -24,9 +24,11 @@
   },
   "homepage": "https://github.com/volkovasystems/comex#readme",
   "dependencies": {
+    "arid": "^0.15.0",
     "diatom": "^0.13.0",
     "falzy": "^0.13.0",
     "gnaw": "^0.6.0",
+    "plough": "^0.14.0",
     "protype": "^0.17.0",
     "truly": "^0.13.0"
   }
