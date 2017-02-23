@@ -34,3 +34,19 @@ comex( "ps -e" )
 	.execute( function done( error, result ){
 		console.log( arguments );
 	} );
+
+comex( "ps -e" )
+	.pipe( "grep", "atom" )
+	.pipe( "tr -s ' '" )
+	.pipe( "xargs echo -n" )
+	.pipe( "cut -d ' ' -f", 1 )
+	.log( "./log" )
+	.execute( );
+
+comex( "ps -e" )
+	.pipe( "grep", "sh" )
+	.pipe( "tr -s ' '" )
+	.pipe( "xargs echo -n" )
+	.pipe( "cut -d ' ' -f", 1 )
+	.background( )
+	.execute( );

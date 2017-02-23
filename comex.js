@@ -48,22 +48,28 @@
 	@include:
 		{
 			"arid": "arid",
+			"depher": "depher",
 			"diatom": "diatom",
 			"falzy": "falzy",
 			"gnaw": "gnaw",
+			"optfor": "optfor",
 			"plough": "plough",
 			"protype": "protype",
+			"raze": "raze",
 			"truly": "truly"
 		}
 	@end-include
 */
 
 const arid = require( "arid" );
+const depher = require( "depher" );
 const diatom = require( "diatom" );
 const falzy = require( "falzy" );
 const gnaw = require( "gnaw" );
+const optfor = require( "optfor" );
 const plough = require( "plough" );
 const protype = require( "protype" );
+const raze = require( "raze" );
 const truly = require( "truly" );
 
 const AND_SEPARATOR = "&&";
@@ -257,7 +263,7 @@ Comex.prototype.background = function background( ){
 	return this;
 };
 
-Comex.prototype.execute = function execute( callback ){
+Comex.prototype.execute = function execute( callback, option ){
 	/*;
 		@meta-configuration:
 			{
@@ -269,18 +275,24 @@ Comex.prototype.execute = function execute( callback ){
 	let command = this.resolve( this.command );
 
 	if( truly( this.logPath ) ){
-		command = `${ command } &> ${ this.logPath }`;
+		command = `${ command } 2>&1 1> ${ this.logPath }`;
 	}
 
 	if( this.daemon === true ){
 		command = `${ command } &`;
 	}
 
+	let parameter = raze( arguments );
+
+	callback = optfor( parameter, FUNCTION );
+
+	option = depher( parameter, OBJECT, { } );
+
 	if( truly( callback ) && protype( callback, FUNCTION ) ){
-		return gnaw( command )( callback );
+		return gnaw( command, option )( callback );
 
 	}else{
-		return gnaw( command, true );
+		return gnaw( command, option, true );
 	}
 };
 

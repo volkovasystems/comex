@@ -405,6 +405,18 @@ optall@^0.11.0:
     pyck "^0.15.0"
     zelf "^0.8.0"
 
+optfor@^0.16.0:
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/optfor/-/optfor-0.16.0.tgz#6d3339e0fef2df79ec805981d9dc10f52e19c931"
+  dependencies:
+    babel-runtime "^6.23.0"
+    doubt "^0.17.0"
+    falze "^0.11.0"
+    harden "^0.16.0"
+    optall "^0.11.0"
+    protype "^0.17.0"
+    zelf "^0.8.0"
+
 optimist@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
