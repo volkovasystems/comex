@@ -246,7 +246,7 @@ Comex.prototype.log = function log( logPath ){
 		throw new Error( "invalid log path" );
 	}
 
-	this.log = logPath;
+	this.logPath = logPath;
 
 	return this;
 };
@@ -268,8 +268,8 @@ Comex.prototype.execute = function execute( callback ){
 
 	let command = this.resolve( this.command );
 
-	if( truly( this.log ) ){
-		command = `${ command } &> ${ this.log }`;
+	if( truly( this.logPath ) ){
+		command = `${ command } &> ${ this.logPath }`;
 	}
 
 	if( this.daemon === true ){
