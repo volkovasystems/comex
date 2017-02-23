@@ -1,0 +1,33 @@
+{
+  "name": "comex",
+  "version": "0.0.0",
+  "description": "Shell command builder executor.",
+  "main": "comex.js",
+  "scripts": {
+    "test": "mocha comex-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/volkovasystems/comex.git"
+  },
+  "keywords": [
+    "shell",
+    "command",
+    "builder",
+    "executor",
+    "comex"
+  ],
+  "author": "Richeve S. Bebedor <richeve.bebedor@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/volkovasystems/comex/issues"
+  },
+  "homepage": "https://github.com/volkovasystems/comex#readme",
+  "dependencies": {
+    "diatom": "^0.13.0",
+    "falzy": "^0.13.0",
+    "gnaw": "^0.6.0",
+    "protype": "^0.17.0",
+    "truly": "^0.13.0"
+  }
+}
