@@ -122,9 +122,8 @@ Comex.prototype.flatten = function flatten( command ){
 		@end-meta-configuration
 	*/
 
-	return plough( arguments ).filter( ( command ) => {
-		return truly( command ) && protype( command, STRING );
-	} );
+	return plough( arguments ).filter( truly )
+		.map( ( command ) => { return command.toString( ); } );
 };
 
 Comex.prototype.output = function output( command ){
@@ -139,7 +138,8 @@ Comex.prototype.output = function output( command ){
 		@end-meta-configuration
 	*/
 
-	return plough( arguments ).join( SPACE_SEPARATOR ).replace( /\s+/g, SPACE_SEPARATOR ).trim( );
+	return plough( arguments ).filter( truly )
+		.join( SPACE_SEPARATOR ).replace( /\s+/g, SPACE_SEPARATOR ).trim( );
 };
 
 Comex.prototype.and = function and( command ){
