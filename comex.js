@@ -233,6 +233,30 @@ Comex.prototype.join = function join( command ){
 	return this;
 };
 
+Comex.prototype.log = function log( logPath ){
+	/*;
+		@meta-configuration:
+			{
+				"logPath:required": "string"
+			}
+		@end-meta-configuration
+	*/
+
+	if( falzy( logPath ) || !protype( logPath, STRING ) ){
+		throw new Error( "invalid log path" );
+	}
+
+	this.log = logPath;
+
+	return this;
+};
+
+Comex.prototype.background = function background( ){
+	this.daemon = true;
+
+	return this;
+};
+
 Comex.prototype.execute = function execute( callback ){
 	/*;
 		@meta-configuration:
@@ -243,6 +267,14 @@ Comex.prototype.execute = function execute( callback ){
 	*/
 
 	let command = this.resolve( this.command );
+
+	if( truly( this.log ) ){
+		command = `${ command } &> ${ this.log }`;
+	}
+
+	if( this.daemon === true ){
+		command = `${ command } &`;
+	}
 
 	if( truly( callback ) && protype( callback, FUNCTION ) ){
 		return gnaw( command )( callback );
