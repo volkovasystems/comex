@@ -48,14 +48,12 @@
 	@include:
 		{
 			"arid": "arid",
-			"depher": "depher",
 			"diatom": "diatom",
 			"falzy": "falzy",
 			"gnaw": "gnaw",
-			"optfor": "optfor",
+			"optall": "optall",
 			"plough": "plough",
 			"protype": "protype",
-			"raze": "raze",
 			"stringe": "stringe",
 			"truly": "truly"
 		}
@@ -63,14 +61,12 @@
 */
 
 const arid = require( "arid" );
-const depher = require( "depher" );
 const diatom = require( "diatom" );
 const falzy = require( "falzy" );
 const gnaw = require( "gnaw" );
-const optfor = require( "optfor" );
+const optall = require( "optall" );
 const plough = require( "plough" );
 const protype = require( "protype" );
-const raze = require( "raze" );
 const stringe = require( "stringe" );
 const truly = require( "truly" );
 
@@ -284,11 +280,7 @@ Comex.prototype.execute = function execute( callback, option ){
 		command = `${ command } &`;
 	}
 
-	let parameter = raze( arguments );
-
-	callback = optfor( parameter, FUNCTION );
-
-	option = depher( parameter, OBJECT, { } );
+	[ callback, option ] = optall( arguments, [ FUNCTION, OBJECT ] );
 
 	if( truly( callback ) && protype( callback, FUNCTION ) ){
 		return gnaw( command, option )( callback );

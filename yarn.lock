@@ -398,18 +398,6 @@ optall@^0.12.0:
     pyck "^0.18.0"
     zelf "^0.10.0"
 
-optfor@^0.17.0:
-  version "0.17.0"
-  resolved "https://registry.yarnpkg.com/optfor/-/optfor-0.17.0.tgz#74c7c4956d49e15c9be58b3395a0907d593b50a9"
-  dependencies:
-    babel-runtime "^6.23.0"
-    doubt "^0.22.0"
-    falze "^0.17.0"
-    harden "^0.19.0"
-    optall "^0.12.0"
-    protype "^0.20.0"
-    zelf "^0.10.0"
-
 optimist@^0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
@@ -552,8 +540,8 @@ truly@^0.16.0:
     protype "^0.20.0"
 
 uglify-js@^2.6:
-  version "2.8.12"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.12.tgz#8a50f5d482243650b7108f6080aa3a6afe2a6c55"
+  version "2.8.13"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.13.tgz#d0cdf02f3c661484fac601b7e723207b735a374c"
   dependencies:
     source-map "~0.5.1"
     uglify-to-browserify "~1.0.0"
