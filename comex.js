@@ -270,6 +270,8 @@ Comex.prototype.execute = function execute( callback, option ){
 		@end-meta-configuration
 	*/
 
+	[ callback, option ] = optall( arguments, [ FUNCTION, OBJECT ] );
+
 	let command = this.resolve( this.command );
 
 	if( truly( this.logPath ) ){
@@ -279,8 +281,6 @@ Comex.prototype.execute = function execute( callback, option ){
 	if( this.daemon === true ){
 		command = `${ command } &`;
 	}
-
-	[ callback, option ] = optall( arguments, [ FUNCTION, OBJECT ] );
 
 	if( truly( callback ) && protype( callback, FUNCTION ) ){
 		return gnaw( command, option )( callback );
