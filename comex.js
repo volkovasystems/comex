@@ -294,7 +294,12 @@ Comex.prototype.execute = function execute( callback, option ){
 		return gnaw( command, option )( callback );
 
 	}else{
-		return gnaw( command, option, true );
+		try{
+			return gnaw( command, option, true );
+
+		}catch( error ){
+			throw new Error( `command chain execution failed, ${ error.stack }` );
+		}
 	}
 };
 
