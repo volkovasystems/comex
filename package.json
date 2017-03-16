@@ -1,6 +1,6 @@
 {
   "name": "comex",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Shell command builder executor.",
   "main": "comex.js",
   "scripts": {
@@ -24,15 +24,16 @@
   },
   "homepage": "https://github.com/volkovasystems/comex#readme",
   "dependencies": {
-    "arid": "^0.15.0",
-    "depher": "^0.17.0",
-    "diatom": "^0.13.0",
-    "falzy": "^0.13.0",
-    "gnaw": "^0.6.0",
-    "optfor": "^0.16.0",
-    "plough": "^0.14.0",
-    "protype": "^0.17.0",
-    "raze": "^0.19.0",
-    "truly": "^0.13.0"
+    "arid": "^0.20.0",
+    "depher": "^0.20.0",
+    "diatom": "^0.16.0",
+    "falzy": "^0.16.0",
+    "gnaw": "^0.7.0",
+    "optfor": "^0.17.0",
+    "plough": "^0.20.0",
+    "protype": "^0.20.0",
+    "raze": "^0.23.0",
+    "stringe": "^0.1.0",
+    "truly": "^0.16.0"
   }
 }

@@ -8,5 +8,6 @@ optfor \
 plough \
 protype \
 raze \
+stringe \
 truly \
 --save

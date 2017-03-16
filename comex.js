@@ -56,6 +56,7 @@
 			"plough": "plough",
 			"protype": "protype",
 			"raze": "raze",
+			"stringe": "stringe",
 			"truly": "truly"
 		}
 	@end-include
@@ -70,6 +71,7 @@ const optfor = require( "optfor" );
 const plough = require( "plough" );
 const protype = require( "protype" );
 const raze = require( "raze" );
+const stringe = require( "stringe" );
 const truly = require( "truly" );
 
 const AND_SEPARATOR = "&&";
@@ -128,8 +130,7 @@ Comex.prototype.flatten = function flatten( command ){
 		@end-meta-configuration
 	*/
 
-	return plough( arguments ).filter( truly )
-		.map( ( command ) => { return command.toString( ); } );
+	return plough( arguments ).filter( truly ).map( stringe );
 };
 
 Comex.prototype.output = function output( command ){
@@ -267,7 +268,8 @@ Comex.prototype.execute = function execute( callback, option ){
 	/*;
 		@meta-configuration:
 			{
-				"callback": "function"
+				"callback": "function",
+				"option": "object"
 			}
 		@end-meta-configuration
 	*/
