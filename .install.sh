@@ -1,13 +1,14 @@
 yarn add \
 arid \
 clazof \
-dephall \
+depher \
 diatom \
 falzy \
 gnaw \
 letgo \
 plough \
 protype \
+raze \
 stringe \
 truly \
 zelf \

@@ -48,13 +48,14 @@
 	@include:
 		{
 			"arid": "arid",
-			"dephall": "dephall",
+			"depher": "depher",
 			"diatom": "diatom",
 			"falzy": "falzy",
 			"gnaw": "gnaw",
 			"letgo": "letgo",
 			"plough": "plough",
 			"protype": "protype",
+			"raze": "raze",
 			"stringe": "stringe",
 			"truly": "truly",
 			"zelf": "zelf"
@@ -64,13 +65,14 @@
 
 const arid = require( "arid" );
 const clazof = require( "clazof" );
-const dephall = require( "dephall" );
+const depher = require( "depher" );
 const diatom = require( "diatom" );
 const falzy = require( "falzy" );
 const gnaw = require( "gnaw" );
 const letgo = require( "letgo" );
 const plough = require( "plough" );
 const protype = require( "protype" );
+const raze = require( "raze" );
 const stringe = require( "stringe" );
 const truly = require( "truly" );
 const zelf = require( "zelf" );
@@ -291,7 +293,9 @@ Comex.prototype.execute = function execute( synchronous, option ){
 		@end-meta-configuration
 	*/
 
-	[ synchronous, option ] = dephall( arguments, [ BOOLEAN, OBJECT ], false, { } );
+	let parameter = raze( arguments );
+	synchronous = depher( parameter, BOOLEAN, false );
+	option = depher( parameter, OBJECT, { } );
 
 	let command = this.resolve( this.command );
 
