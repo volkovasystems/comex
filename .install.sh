@@ -1,11 +1,14 @@
 yarn add \
 arid \
+clazof \
+dephall \
 diatom \
 falzy \
 gnaw \
-optall \
+letgo \
 plough \
 protype \
 stringe \
 truly \
+zelf \
 --save

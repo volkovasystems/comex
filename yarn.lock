@@ -166,6 +166,21 @@ dephall@^0.18.0:
     truly "^0.16.0"
     zelf "^0.10.0"
 
+dephall@^0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/dephall/-/dephall-0.19.0.tgz#53067cd3514b21683ca6f7b965c1acc75e80b6a4"
+  dependencies:
+    arid "^0.20.0"
+    babel-runtime "^6.23.0"
+    doubt "^0.22.0"
+    falze "^0.17.0"
+    harden "^0.19.0"
+    plough "^0.20.0"
+    pyck "^0.18.0"
+    raze "^0.23.0"
+    truly "^0.16.0"
+    zelf "^0.10.0"
+
 depher@^0.20.0:
   version "0.20.0"
   resolved "https://registry.yarnpkg.com/depher/-/depher-0.20.0.tgz#672ac001489c5622c7c7fd22daf5cdd5c38c7aff"

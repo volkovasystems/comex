@@ -48,27 +48,32 @@
 	@include:
 		{
 			"arid": "arid",
+			"dephall": "dephall",
 			"diatom": "diatom",
 			"falzy": "falzy",
 			"gnaw": "gnaw",
-			"optall": "optall",
+			"letgo": "letgo",
 			"plough": "plough",
 			"protype": "protype",
 			"stringe": "stringe",
-			"truly": "truly"
+			"truly": "truly",
+			"zelf": "zelf"
 		}
 	@end-include
 */
 
 const arid = require( "arid" );
+const clazof = require( "clazof" );
+const dephall = require( "dephall" );
 const diatom = require( "diatom" );
 const falzy = require( "falzy" );
 const gnaw = require( "gnaw" );
-const optall = require( "optall" );
+const letgo = require( "letgo" );
 const plough = require( "plough" );
 const protype = require( "protype" );
 const stringe = require( "stringe" );
 const truly = require( "truly" );
+const zelf = require( "zelf" );
 
 const AND_SEPARATOR = "&&";
 const OR_SEPARATOR = "||";
@@ -90,11 +95,27 @@ Comex.prototype.initialize = function initialize( command ){
 		@end-meta-configuration
 	*/
 
+	this.context( );
+
 	this.command = this.flatten( arguments );
 
 	if( arid( this.command ) ){
 		throw new Error( "invalid command" );
 	}
+
+	return this;
+};
+
+Comex.prototype.context = function context( self ){
+	/*;
+		@meta-configuration:
+			{
+				"self:required": "*"
+			}
+		@end-meta-configuration
+	*/
+
+	this.self = zelf( self );
 
 	return this;
 };
@@ -260,15 +281,17 @@ Comex.prototype.background = function background( ){
 	return this;
 };
 
-Comex.prototype.execute = function execute( callback, option ){
+Comex.prototype.execute = function execute( synchronous, option ){
 	/*;
 		@meta-configuration:
 			{
-				"callback": "function",
+				"synchronous": "boolean",
 				"option": "object"
 			}
 		@end-meta-configuration
 	*/
+
+	[ synchronous, option ] = dephall( arguments, [ BOOLEAN, OBJECT ], false, { } );
 
 	let command = this.resolve( this.command );
 
@@ -280,18 +303,25 @@ Comex.prototype.execute = function execute( callback, option ){
 		command = `${ command } &`;
 	}
 
-	[ callback, option ] = optall( arguments, [ FUNCTION, OBJECT ] );
-
-	if( truly( callback ) && protype( callback, FUNCTION ) ){
-		return gnaw( command, option )( callback );
-
-	}else{
+	if( synchronous ){
 		try{
 			return gnaw( command, option, true );
 
 		}catch( error ){
 			throw new Error( `command chain execution failed, ${ error.stack }` );
 		}
+
+	}else{
+	 	return letgo.bind( this.self )( function later( cache ){
+			return gnaw( command, option )( function done( error, result ){
+				if( clazof( error, Error ) ){
+					return cache.callback( new Error( `command chain execution failed, ${ error.stack }` ), "" );
+
+				}else{
+					return cache.callback( null, result );
+				}
+			} );
+		} );
 	}
 };
 

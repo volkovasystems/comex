@@ -6,14 +6,14 @@ console.log( comex( "ps -e" )
 	.pipe( "tr -s ' '" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f 1" )
-	.execute( ) );
+	.execute( true ) );
 
 comex( "ps -e" )
 	.pipe( "grep node" )
 	.pipe( "tr -s ' '" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f 1" )
-	.execute( function done( error, result ){
+	.execute( )( function done( error, result ){
 		console.log( arguments );
 	} );
 
@@ -22,7 +22,7 @@ comex( "ps -e" )
 	.pipe( "tr -s ' '" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f 1" )
-	.execute( function done( error, result ){
+	.execute( )( function done( error, result ){
 		console.log( arguments );
 	} );
 
@@ -31,7 +31,7 @@ comex( "ps -e" )
 	.pipe( "tr -s ' '" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f", 1 )
-	.execute( function done( error, result ){
+	.execute( )( function done( error, result ){
 		console.log( arguments );
 	} );
 
@@ -41,7 +41,7 @@ comex( "ps -e" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f", 1 )
 	.log( "./log" )
-	.execute( );
+	.execute( true );
 
 comex( "ps -e" )
 	.pipe( "grep", "sh" )
@@ -49,4 +49,4 @@ comex( "ps -e" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f", 1 )
 	.background( )
-	.execute( );
+	.execute( true );
