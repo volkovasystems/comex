@@ -1,6 +1,6 @@
 {
   "name": "comex",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "Shell command builder executor.",
   "main": "comex.js",
   "scripts": {
@@ -32,8 +32,8 @@
     "depher": "^0.32.0",
     "diatom": "^0.27.0",
     "falzy": "^0.19.0",
-    "gnaw": "^0.15.0",
-    "letgo": "^0.29.0",
+    "gnaw": "^0.16.0",
+    "letgo": "^0.34.0",
     "plough": "^0.25.0",
     "protype": "^0.21.0",
     "raze": "^0.29.0",
