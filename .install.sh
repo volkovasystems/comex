@@ -5,7 +5,6 @@ depher \
 diatom \
 falzy \
 gnaw \
-letgo \
 plough \
 protype \
 raze \

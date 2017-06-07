@@ -55,7 +55,6 @@
 			"diatom": "diatom",
 			"falzy": "falzy",
 			"gnaw": "gnaw",
-			"letgo": "letgo",
 			"plough": "plough",
 			"protype": "protype",
 			"raze": "raze",
@@ -72,7 +71,6 @@ const depher = require( "depher" );
 const diatom = require( "diatom" );
 const falzy = require( "falzy" );
 const gnaw = require( "gnaw" );
-const letgo = require( "letgo" );
 const plough = require( "plough" );
 const protype = require( "protype" );
 const raze = require( "raze" );
@@ -86,9 +84,9 @@ const PIPE_SEPARATOR = "|";
 const THEN_SEPARATOR = ";";
 const SPACE_SEPARATOR = " ";
 
-const Comex = diatom( "Comex" );
+const Command = diatom( "Command" );
 
-Comex.prototype.initialize = function initialize( command ){
+Command.prototype.initialize = function initialize( command ){
 	/*;
 		@meta-configuration:
 			{
@@ -111,7 +109,7 @@ Comex.prototype.initialize = function initialize( command ){
 	return this;
 };
 
-Comex.prototype.context = function context( self ){
+Command.prototype.context = function context( self ){
 	/*;
 		@meta-configuration:
 			{
@@ -125,7 +123,7 @@ Comex.prototype.context = function context( self ){
 	return this;
 };
 
-Comex.prototype.resolve = function resolve( command ){
+Command.prototype.resolve = function resolve( command ){
 	/*;
 		@meta-configuration:
 			{
@@ -140,7 +138,7 @@ Comex.prototype.resolve = function resolve( command ){
 	return this.output( this.flatten( arguments ) );
 };
 
-Comex.prototype.flatten = function flatten( command ){
+Command.prototype.flatten = function flatten( command ){
 	/*;
 		@meta-configuration:
 			{
@@ -155,7 +153,7 @@ Comex.prototype.flatten = function flatten( command ){
 	return plough( arguments ).filter( truly ).map( stringe );
 };
 
-Comex.prototype.output = function output( command ){
+Command.prototype.output = function output( command ){
 	/*;
 		@meta-configuration:
 			{
@@ -171,7 +169,7 @@ Comex.prototype.output = function output( command ){
 		.join( SPACE_SEPARATOR ).replace( /\s+/g, SPACE_SEPARATOR ).trim( );
 };
 
-Comex.prototype.and = function and( command ){
+Command.prototype.and = function and( command ){
 	/*;
 		@meta-configuration:
 			{
@@ -188,7 +186,7 @@ Comex.prototype.and = function and( command ){
 	return this;
 };
 
-Comex.prototype.or = function or( command ){
+Command.prototype.or = function or( command ){
 	/*;
 		@meta-configuration:
 			{
@@ -205,7 +203,7 @@ Comex.prototype.or = function or( command ){
 	return this;
 };
 
-Comex.prototype.pipe = function pipe( command ){
+Command.prototype.pipe = function pipe( command ){
 	/*;
 		@meta-configuration:
 			{
@@ -222,7 +220,7 @@ Comex.prototype.pipe = function pipe( command ){
 	return this;
 };
 
-Comex.prototype.then = function then( command ){
+Command.prototype.then = function then( command ){
 	/*;
 		@meta-configuration:
 			{
@@ -239,7 +237,7 @@ Comex.prototype.then = function then( command ){
 	return this;
 };
 
-Comex.prototype.join = function join( command ){
+Command.prototype.join = function join( command ){
 	/*;
 		@meta-configuration:
 			{
@@ -262,7 +260,7 @@ Comex.prototype.join = function join( command ){
 	return this;
 };
 
-Comex.prototype.log = function log( logPath ){
+Command.prototype.log = function log( logPath ){
 	/*;
 		@meta-configuration:
 			{
@@ -280,13 +278,13 @@ Comex.prototype.log = function log( logPath ){
 	return this;
 };
 
-Comex.prototype.background = function background( ){
+Command.prototype.background = function background( ){
 	this.daemon = true;
 
 	return this;
 };
 
-Comex.prototype.execute = function execute( synchronous, option ){
+Command.prototype.execute = function execute( synchronous, option ){
 	/*;
 		@meta-configuration:
 			{
@@ -312,24 +310,40 @@ Comex.prototype.execute = function execute( synchronous, option ){
 
 	if( synchronous ){
 		try{
-			return gnaw( command, option, true );
+			return gnaw( command, true, option );
 
 		}catch( error ){
 			throw new Error( `command chain execution failed, ${ error.stack }` );
 		}
 
 	}else{
-	 	return letgo.bind( this.self )( function later( cache ){
-			return gnaw( command, option )( function done( error, result ){
+		let catcher = gnaw.bind( this.self )( command, option )
+			.push( function done( error, result ){
 				if( clazof( error, Error ) ){
-					return cache.callback( new Error( `command chain execution failed, ${ error.stack }` ), "" );
+					return catcher.pass( new Error( `command chain execution failed, ${ error.stack }` ), "" );
 
 				}else{
-					return cache.callback( null, result );
+					return catcher.pass( null, result );
 				}
 			} );
-		} );
+
+		return catcher;
 	}
 };
 
-module.exports = Comex;
+const comex = function comex( command ){
+	/*;
+		@meta-configuration:
+			{
+				"command:required": [
+					"string",
+					"..."
+				]
+			}
+		@end-meta-configuration
+	*/
+
+	return Command.apply( null, arguments ).context( zelf( this ) );
+};
+
+module.exports = comex;
