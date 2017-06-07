@@ -51,6 +51,8 @@
 	@include:
 		{
 			"arid": "arid",
+			"clazof": "clazof",
+			"condev": "condev",
 			"depher": "depher",
 			"diatom": "diatom",
 			"falzy": "falzy",
@@ -59,6 +61,7 @@
 			"protype": "protype",
 			"raze": "raze",
 			"stringe": "stringe",
+			"transpher": "transpher",
 			"truly": "truly",
 			"zelf": "zelf"
 		}
@@ -67,6 +70,7 @@
 
 const arid = require( "arid" );
 const clazof = require( "clazof" );
+const condev = require( "condev" );
 const depher = require( "depher" );
 const diatom = require( "diatom" );
 const falzy = require( "falzy" );
@@ -75,6 +79,7 @@ const plough = require( "plough" );
 const protype = require( "protype" );
 const raze = require( "raze" );
 const stringe = require( "stringe" );
+const transpher = require( "transpher" );
 const truly = require( "truly" );
 const zelf = require( "zelf" );
 
@@ -83,6 +88,8 @@ const OR_SEPARATOR = "||";
 const PIPE_SEPARATOR = "|";
 const THEN_SEPARATOR = ";";
 const SPACE_SEPARATOR = " ";
+
+const ANNOTATE_PATTERN = /^\@/;
 
 const Command = diatom( "Command" );
 
@@ -284,6 +291,42 @@ Command.prototype.background = function background( ){
 	return this;
 };
 
+Command.prototype.replace = function replace( pattern, value ){
+	/*;
+		@meta-configuration:
+			{
+				"pattern:required": [
+					"string",
+					RegExp
+				],
+				"value:required": "*"
+			}
+		@end-meta-configuration
+	*/
+
+	if( falzy( pattern ) || !condev( pattern, [ STRING, RegExp ] ) ){
+		throw new Error( "invalid log path" );
+	}
+
+	if( protype( pattern, STRING ) && !ANNOTATE_PATTERN.test( pattern ) ){
+		pattern = `@${ pattern }`;
+	}
+
+	if( protype( pattern, STRING ) ){
+		pattern = new RegExp( pattern );
+	}
+
+	this.command.forEach( ( command, index ) => {
+		this.command[ index ] = command.replace( pattern, stringe( value ) );
+	} );
+
+	return this;
+};
+
+Command.prototype.clone = function clone( ){
+	return transpher( this, Command.apply( null, this.command ), true );
+};
+
 Command.prototype.execute = function execute( synchronous, option ){
 	/*;
 		@meta-configuration:
@@ -295,7 +338,9 @@ Command.prototype.execute = function execute( synchronous, option ){
 	*/
 
 	let parameter = raze( arguments );
+
 	synchronous = depher( parameter, BOOLEAN, false );
+
 	option = depher( parameter, OBJECT, { } );
 
 	let command = this.resolve( this.command );

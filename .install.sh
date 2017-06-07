@@ -1,6 +1,7 @@
 yarn add \
 arid \
 clazof \
+condev \
 depher \
 diatom \
 falzy \
@@ -9,6 +10,7 @@ plough \
 protype \
 raze \
 stringe \
+transpher \
 truly \
 zelf \
 --save
