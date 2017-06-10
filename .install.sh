@@ -1,10 +1,10 @@
 yarn add \
 arid \
-clazof \
 condev \
 depher \
 diatom \
 falzy \
+filled \
 gnaw \
 plough \
 protype \

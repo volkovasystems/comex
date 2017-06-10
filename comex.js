@@ -51,12 +51,13 @@
 	@include:
 		{
 			"arid": "arid",
-			"clazof": "clazof",
 			"condev": "condev",
 			"depher": "depher",
 			"diatom": "diatom",
 			"falzy": "falzy",
+			"filled": "filled",
 			"gnaw": "gnaw",
+			"harden": "harden",
 			"plough": "plough",
 			"protype": "protype",
 			"raze": "raze",
@@ -69,12 +70,13 @@
 */
 
 const arid = require( "arid" );
-const clazof = require( "clazof" );
 const condev = require( "condev" );
 const depher = require( "depher" );
 const diatom = require( "diatom" );
 const falzy = require( "falzy" );
+const filled = require( "filled" );
 const gnaw = require( "gnaw" );
+const harden = require( "harden" );
 const plough = require( "plough" );
 const protype = require( "protype" );
 const raze = require( "raze" );
@@ -90,6 +92,8 @@ const THEN_SEPARATOR = ";";
 const SPACE_SEPARATOR = " ";
 
 const ANNOTATE_PATTERN = /^\@/;
+
+const FORMAT = Symbol( "format" );
 
 const Command = diatom( "Command" );
 
@@ -112,6 +116,8 @@ Command.prototype.initialize = function initialize( command ){
 	if( arid( this.command ) ){
 		throw new Error( "invalid command" );
 	}
+
+	harden( FORMAT, [ ], this );
 
 	return this;
 };
@@ -327,6 +333,24 @@ Command.prototype.clone = function clone( ){
 	return transpher( this, Command.apply( null, this.command ), true );
 };
 
+Command.prototype.format = function format( formatter ){
+	/*;
+		@meta-configuration:
+			{
+				"formatter:required": "function"
+			}
+		@end-meta-configuration
+	*/
+
+	if( falzy( formatter ) || !protype( formatter, FUNCTION ) ){
+		throw new Error( "invalid formatter" );
+	}
+
+	this[ FORMAT ].push( formatter );
+
+	return this;
+};
+
 Command.prototype.execute = function execute( synchronous, option ){
 	/*;
 		@meta-configuration:
@@ -355,17 +379,34 @@ Command.prototype.execute = function execute( synchronous, option ){
 
 	if( synchronous ){
 		try{
-			return gnaw( command, true, option );
+			if( filled( this[ FORMAT ] ) ){
+				let result = gnaw( command, true, option );
+
+				return this[ FORMAT ].reduce( ( result, formatter ) => formatter( result ), result );
+
+			}else{
+				return gnaw( command, true, option );
+			}
 
 		}catch( error ){
-			throw new Error( `command chain execution failed, ${ error.stack }` );
+			throw new Error( `cannot chain command, ${ error.stack }` );
 		}
 
 	}else{
+		let self = this;
+
 		let catcher = gnaw.bind( this.self )( command, option )
 			.push( function done( error, result ){
-				if( clazof( error, Error ) ){
-					return catcher.pass( new Error( `command chain execution failed, ${ error.stack }` ), "" );
+				if( error instanceof Error ){
+					return catcher.pass( new Error( `cannot chain command, ${ error.stack }` ), "" );
+
+				}else if( filled( self[ FORMAT ] ) ){
+					try{
+						return catcher.pass( null, self[ FORMAT ].reduce( ( result, formatter ) => formatter( result ), result ) );
+
+					}catch( error ){
+						return catcher.pass( new Error( `cannot format, cannot chain command, ${ error.stack }` ), "" );
+					}
 
 				}else{
 					return catcher.pass( null, result );
