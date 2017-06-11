@@ -330,7 +330,13 @@ Command.prototype.replace = function replace( pattern, value ){
 };
 
 Command.prototype.clone = function clone( ){
-	return transpher( this, Command.apply( null, this.command ), true );
+	let command = Command.apply( null, this.command );
+
+	if( filled( this[ FORMAT ] ) ){
+		this[ FORMAT ].forEach( ( formatter ) => command[ FORMAT ].push( formatter ) );
+	}
+
+	return transpher( this, command, true );
 };
 
 Command.prototype.format = function format( formatter ){
