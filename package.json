@@ -1,6 +1,6 @@
 {
   "name": "comex",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Shell command builder executor.",
   "main": "comex.js",
   "scripts": {
@@ -34,12 +34,15 @@
     "falzy": "^0.20.0",
     "filled": "^0.22.0",
     "gnaw": "^0.20.0",
+    "kein": "^0.26.0",
     "plough": "^0.26.0",
     "protype": "^0.22.0",
     "raze": "^0.30.0",
     "stringe": "^0.4.0",
+    "stuffed": "^0.23.0",
     "transpher": "^0.26.0",
     "truly": "^0.19.0",
+    "wichevr": "^0.10.0",
     "zelf": "^0.12.0"
   }
 }

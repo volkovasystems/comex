@@ -58,12 +58,15 @@
 			"filled": "filled",
 			"gnaw": "gnaw",
 			"harden": "harden",
+			"kein": "kein",
 			"plough": "plough",
 			"protype": "protype",
 			"raze": "raze",
 			"stringe": "stringe",
+			"stuffed": "stuffed",
 			"transpher": "transpher",
 			"truly": "truly",
+			"wichevr": "wichevr",
 			"zelf": "zelf"
 		}
 	@end-include
@@ -77,12 +80,15 @@ const falzy = require( "falzy" );
 const filled = require( "filled" );
 const gnaw = require( "gnaw" );
 const harden = require( "harden" );
+const kein = require( "kein" );
 const plough = require( "plough" );
 const protype = require( "protype" );
 const raze = require( "raze" );
 const stringe = require( "stringe" );
+const stuffed = require( "stuffed" );
 const transpher = require( "transpher" );
 const truly = require( "truly" );
+const wichevr = require( "wichevr" );
 const zelf = require( "zelf" );
 
 const AND_SEPARATOR = "&&";
@@ -93,7 +99,13 @@ const SPACE_SEPARATOR = " ";
 
 const ANNOTATE_PATTERN = /^\@/;
 
+const CACHE = Symbol( "cache" );
+const CATCHER = Symbol( "catcher" );
+const CLONE = Symbol( "clone" );
+const DEFAULT = Symbol( "default" );
 const FORMAT = Symbol( "format" );
+const STATE = Symbol( "state" );
+const STOPPED = Symbol( "stopped" );
 
 const Command = diatom( "Command" );
 
@@ -118,6 +130,12 @@ Command.prototype.initialize = function initialize( command ){
 	}
 
 	harden( FORMAT, [ ], this );
+
+	harden( CACHE, { }, this );
+
+	this[ STATE ] = { };
+
+	this[ DEFAULT ] = "";
 
 	return this;
 };
@@ -332,9 +350,37 @@ Command.prototype.replace = function replace( pattern, value ){
 Command.prototype.clone = function clone( ){
 	let command = Command.apply( null, this.command );
 
+	command[ DEFAULT ] = this[ DEFAULT ];
+
 	if( filled( this[ FORMAT ] ) ){
 		this[ FORMAT ].forEach( ( formatter ) => command[ FORMAT ].push( formatter ) );
 	}
+
+	if( stuffed( this[ STATE ] ) ){
+		command[ STATE ] = this[ STATE ];
+	}
+
+	/*;
+		@note:
+			Cache is not transferred by reference.
+		@end-note
+	*/
+	if( stuffed( this[ CACHE ] ) ){
+		Object.keys( this[ CACHE ] ).forEach( ( property ) => {
+			command[ CACHE ][ property ] = this[ CACHE ][ property ];
+		} );
+	}
+
+	if( !kein( CLONE, this[ CACHE ] ) ){
+		this[ CACHE ][ CLONE ] = [ ];
+
+		command[ CACHE ][ CLONE ] = this[ CACHE ][ CLONE ];
+
+	}else{
+		command[ CACHE ][ CLONE ] = this[ CACHE ][ CLONE ];
+	}
+
+	this[ CACHE ][ CLONE ].push( command );
 
 	return transpher( this, command, true );
 };
@@ -355,6 +401,75 @@ Command.prototype.format = function format( formatter ){
 	this[ FORMAT ].push( formatter );
 
 	return this;
+};
+
+Command.prototype.stop = function stop( ){
+	harden( STOPPED, true, this[ STATE ] );
+
+	this[ CACHE ][ CLONE ].forEach( ( command ) => {
+		if( kein( CATCHER, command ) ){
+			command[ CATCHER ].stop( null, command[ DEFAULT ] );
+		}
+	} );
+
+	return this;
+};
+
+Command.prototype.defer = function defer( value ){
+	/*;
+		@meta-configuration:
+			{
+				"value:required": "*"
+			}
+		@end-meta-configuration
+	*/
+
+	this[ DEFAULT ] = value;
+
+	return this;
+};
+
+Command.prototype.set = function set( property, value ){
+	/*;
+		@meta-configuration:
+			{
+				"property:required": [
+					"number",
+					"string",
+					"symbol"
+				],
+				"value:required": "*"
+			}
+		@end-meta-configuration
+	*/
+
+	if( falzy( property ) || !protype( property, NUMBER + STRING + SYMBOL ) ){
+		throw new Error( "invalid property" );
+	}
+
+	this[ CACHE ][ property ] = value;
+
+	return this;
+};
+
+Command.prototype.get = function get( property ){
+	/*;
+		@meta-configuration:
+			{
+				"property:required": [
+					"number",
+					"string",
+					"symbol"
+				]
+			}
+		@end-meta-configuration
+	*/
+
+	if( falzy( property ) || !protype( property, NUMBER + STRING + SYMBOL ) ){
+		throw new Error( "invalid property" );
+	}
+
+	return this[ CACHE ][ property ];
 };
 
 Command.prototype.execute = function execute( synchronous, option ){
@@ -385,13 +500,20 @@ Command.prototype.execute = function execute( synchronous, option ){
 
 	if( synchronous ){
 		try{
-			if( filled( this[ FORMAT ] ) ){
+			let defaultValue = this[ DEFAULT ];
+
+			if( this[ STATE ][ STOPPED ] ){
+				return defaultValue;
+
+			}else if( filled( this[ FORMAT ] ) ){
 				let result = gnaw( command, true, option );
 
-				return this[ FORMAT ].reduce( ( result, formatter ) => formatter( result ), result );
+				return wichevr( this[ FORMAT ].reduce( ( result, formatter ) => {
+					return formatter( result );
+				}, result ), defaultValue );
 
 			}else{
-				return gnaw( command, true, option );
+				return wichevr( gnaw( command, true, option ), defaultValue );
 			}
 
 		}catch( error ){
@@ -403,21 +525,33 @@ Command.prototype.execute = function execute( synchronous, option ){
 
 		let catcher = gnaw.bind( this.self )( command, option )
 			.push( function done( error, result ){
+				if( self[ STATE ][ STOPPED ] ){
+					return catcher;
+				}
+
+				let defaultValue = self[ DEFAULT ];
+
 				if( error instanceof Error ){
-					return catcher.pass( new Error( `cannot chain command, ${ error.stack }` ), "" );
+					return catcher.pass( new Error( `cannot chain command, ${ error.stack }` ), defaultValue );
 
 				}else if( filled( self[ FORMAT ] ) ){
 					try{
-						return catcher.pass( null, self[ FORMAT ].reduce( ( result, formatter ) => formatter( result ), result ) );
+						result = wichevr( self[ FORMAT ].reduce( ( result, formatter ) => {
+							return formatter( result );
+						}, result ), defaultValue );
+
+						return catcher.pass( null, result );
 
 					}catch( error ){
-						return catcher.pass( new Error( `cannot format, cannot chain command, ${ error.stack }` ), "" );
+						return catcher.pass( new Error( `cannot format, cannot chain command, ${ error.stack }` ), defaultValue );
 					}
 
 				}else{
-					return catcher.pass( null, result );
+					return catcher.pass( null, wichevr( result, defaultValue ) );
 				}
 			} );
+
+		this[ CATCHER ] = catcher;
 
 		return catcher;
 	}
