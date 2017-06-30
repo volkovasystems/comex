@@ -1,12 +1,15 @@
 
+const assert = require( "assert" );
 const comex = require( "./comex.js" );
+const filled = require( "filled" );
+const fs = require( "fs" );
 
-console.log( comex( "ps -e" )
+assert.equal( typeof comex( "ps -e" )
 	.pipe( "grep node" )
 	.pipe( "tr -s ' '" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f 1" )
-	.execute( true ) );
+	.execute( true ) == "string", true, "should be true" );
 
 comex( "ps -e" )
 	.pipe( "grep node" )
@@ -14,7 +17,7 @@ comex( "ps -e" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f 1" )
 	.execute( )( function done( error, result ){
-		console.log( arguments );
+		assert.equal( filled( Array.from( arguments ) ), true, "should be true" );
 	} );
 
 comex( "ps -e" )
@@ -23,7 +26,7 @@ comex( "ps -e" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f 1" )
 	.execute( )( function done( error, result ){
-		console.log( arguments );
+		assert.equal( filled( Array.from( arguments ) ), true, "should be true" );
 	} );
 
 comex( "ps -e" )
@@ -32,7 +35,7 @@ comex( "ps -e" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f", 1 )
 	.execute( )( function done( error, result ){
-		console.log( arguments );
+		assert.equal( filled( Array.from( arguments ) ), true, "should be true" );
 	} );
 
 comex( "ps -e" )
@@ -43,13 +46,28 @@ comex( "ps -e" )
 	.log( "./log" )
 	.execute( true );
 
-comex( "ps -e" )
+const checkIfLogExist = function checkIfLogExist( ) {
+
+	try{
+
+		fs.accessSync( "./log", fs.constants.R_OK | fs.constants.W_OK );
+
+	}catch( error ){
+		return false;
+	}
+
+	return true;
+};
+
+assert.equal( checkIfLogExist( ), true, "should be true" );
+
+assert.equal( comex( "ps -e" )
 	.pipe( "grep", "sh" )
 	.pipe( "tr -s ' '" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f", 1 )
 	.background( )
-	.execute( true );
+	.execute( true ) == "177", true, "should return '177'" );
 
 let command = comex( "ps -e" )
 	.pipe( "grep @name" )
@@ -57,6 +75,8 @@ let command = comex( "ps -e" )
 	.pipe( "xargs echo -n" )
 	.pipe( "cut -d ' ' -f 1" );
 
-console.log( "chrome", command.clone( ).replace( "name", "chrome" ).execute( true ) );
+assert.equal( command.clone( ).replace( "name", "chrome" ).execute( true ) == "", true, "should be true" );
 
-console.log( "atom", command.clone( ).replace( "name", "atom" ).execute( true ) );
+assert.ok( command.clone( ).replace( "name", "atom" ).execute( true ) );
+
+console.log( "ok" );
