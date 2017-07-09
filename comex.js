@@ -49,6 +49,7 @@
 	@include:
 		{
 			"arid": "arid",
+			"burne": "burne",
 			"condev": "condev",
 			"depher": "depher",
 			"diatom": "diatom",
@@ -57,6 +58,8 @@
 			"gnaw": "gnaw",
 			"harden": "harden",
 			"kein": "kein",
+			"mrkd": "mrkd",
+			"pedon": "pedon",
 			"plough": "plough",
 			"protype": "protype",
 			"raze": "raze",
@@ -71,6 +74,7 @@
 */
 
 const arid = require( "arid" );
+const burne = require( "burne" );
 const condev = require( "condev" );
 const depher = require( "depher" );
 const diatom = require( "diatom" );
@@ -79,6 +83,8 @@ const filled = require( "filled" );
 const gnaw = require( "gnaw" );
 const harden = require( "harden" );
 const kein = require( "kein" );
+const mrkd = require( "mrkd" );
+const pedon = require( "pedon" );
 const plough = require( "plough" );
 const protype = require( "protype" );
 const raze = require( "raze" );
@@ -97,11 +103,14 @@ const SPACE_SEPARATOR = " ";
 
 const ANNOTATE_PATTERN = /^\@/;
 
+const REFRESH_COMMAND = ". ~/.bashrc";
+
 const CACHE = Symbol( "cache" );
 const CATCHER = Symbol( "catcher" );
 const CLONE = Symbol( "clone" );
 const DEFAULT = Symbol( "default" );
 const FORMAT = Symbol( "format" );
+const REFRESHING = Symbol( "refreshing" );
 const STATE = Symbol( "state" );
 const STOPPED = Symbol( "stopped" );
 
@@ -179,7 +188,7 @@ Command.prototype.flatten = function flatten( command ){
 		@end-meta-configuration
 	*/
 
-	return plough( arguments ).filter( truly ).map( stringe );
+	return plough( arguments ).map( stringe );
 };
 
 Command.prototype.output = function output( command ){
@@ -194,8 +203,7 @@ Command.prototype.output = function output( command ){
 		@end-meta-configuration
 	*/
 
-	return plough( arguments ).filter( truly )
-		.join( SPACE_SEPARATOR ).replace( /\s+/g, SPACE_SEPARATOR ).trim( );
+	return plough( arguments ).join( SPACE_SEPARATOR ).replace( /\s+/g, SPACE_SEPARATOR ).trim( );
 };
 
 Command.prototype.and = function and( command ){
@@ -211,6 +219,10 @@ Command.prototype.and = function and( command ){
 	*/
 
 	this.join( AND_SEPARATOR ).join( this.resolve( arguments ) );
+
+	if( mrkd( REFRESHING, this[ STATE ], true ) && !pedon.WINDOWS ){
+		this.join( AND_SEPARATOR ).join( REFRESH_COMMAND );
+	}
 
 	return this;
 };
@@ -228,6 +240,10 @@ Command.prototype.or = function or( command ){
 	*/
 
 	this.join( OR_SEPARATOR ).join( this.resolve( arguments ) );
+
+	if( mrkd( REFRESHING, this[ STATE ], true ) && !pedon.WINDOWS ){
+		this.join( AND_SEPARATOR ).join( REFRESH_COMMAND );
+	}
 
 	return this;
 };
@@ -263,6 +279,10 @@ Command.prototype.then = function then( command ){
 
 	this.join( THEN_SEPARATOR ).join( this.resolve( arguments ) );
 
+	if( mrkd( REFRESHING, this[ STATE ], true ) && !pedon.WINDOWS ){
+		this.join( AND_SEPARATOR ).join( REFRESH_COMMAND );
+	}
+
 	return this;
 };
 
@@ -280,7 +300,7 @@ Command.prototype.join = function join( command ){
 
 	command = this.resolve( arguments );
 
-	if( falzy( command ) || !protype( command, STRING ) ){
+	if( falzy( command ) || typeof command != "string" ){
 		throw new Error( "invalid command" );
 	}
 
@@ -298,7 +318,7 @@ Command.prototype.log = function log( logPath ){
 		@end-meta-configuration
 	*/
 
-	if( falzy( logPath ) || !protype( logPath, STRING ) ){
+	if( falzy( logPath ) || typeof logPath != "string" ){
 		throw new Error( "invalid log path" );
 	}
 
@@ -330,11 +350,11 @@ Command.prototype.replace = function replace( pattern, value ){
 		throw new Error( "invalid log path" );
 	}
 
-	if( protype( pattern, STRING ) && !ANNOTATE_PATTERN.test( pattern ) ){
+	if( typeof pattern == "string" && !ANNOTATE_PATTERN.test( pattern ) ){
 		pattern = `@${ pattern }`;
 	}
 
-	if( protype( pattern, STRING ) ){
+	if( typeof pattern == "string" ){
 		pattern = new RegExp( pattern );
 	}
 
@@ -392,7 +412,7 @@ Command.prototype.format = function format( formatter ){
 		@end-meta-configuration
 	*/
 
-	if( falzy( formatter ) || !protype( formatter, FUNCTION ) ){
+	if( falzy( formatter ) || typeof formatter != "function" ){
 		throw new Error( "invalid formatter" );
 	}
 
@@ -402,13 +422,31 @@ Command.prototype.format = function format( formatter ){
 };
 
 Command.prototype.stop = function stop( ){
-	harden( STOPPED, true, this[ STATE ] );
+	if( mrkd( STOPPED, this[ STATE ], true ) ){
+		return this;
+	}
+
+	burne( STOPPED, this[ STATE ] );
 
 	this[ CACHE ][ CLONE ].forEach( ( command ) => {
 		if( kein( CATCHER, command ) ){
 			command[ CATCHER ].stop( null, command[ DEFAULT ] );
 		}
 	} );
+
+	return this;
+};
+
+Command.prototype.refresh = function refresh( ){
+	if( mrkd( REFRESHING, this[ STATE ], true ) ){
+		return this;
+	}
+
+	burne( REFRESHING, this[ STATE ] );
+
+	if( !pedon.WINDOWS ){
+		this.join( AND_SEPARATOR ).join( REFRESH_COMMAND );
+	}
 
 	return this;
 };
@@ -500,7 +538,7 @@ Command.prototype.execute = function execute( synchronous, option ){
 		try{
 			let defaultValue = this[ DEFAULT ];
 
-			if( this[ STATE ][ STOPPED ] ){
+			if( mrkd( STOPPED, this[ STATE ], true ) ){
 				return defaultValue;
 
 			}else if( filled( this[ FORMAT ] ) ){
@@ -523,7 +561,7 @@ Command.prototype.execute = function execute( synchronous, option ){
 
 		let catcher = gnaw.bind( this.self )( command, option )
 			.push( function done( error, result ){
-				if( self[ STATE ][ STOPPED ] ){
+				if( mrkd( STOPPED, this[ STATE ], true ) ){
 					return catcher;
 				}
 
